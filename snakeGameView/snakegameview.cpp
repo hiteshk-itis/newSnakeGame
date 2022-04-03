@@ -1,5 +1,5 @@
 #include "snakegameview.h"
-#include "game.h"
+#include "game/game.h"
 
 
 #include <QGraphicsItem>

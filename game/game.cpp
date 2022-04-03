@@ -2,6 +2,7 @@
 #include "ui_game.h"
 #include <QDebug>
 #include <QLCDNumber>
+
 Game::Game(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Game)

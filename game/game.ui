@@ -36,6 +36,19 @@
           <property name="checkable">
            <bool>false</bool>
           </property>
+          <widget class="QPushButton" name="pushButton_createRoom">
+           <property name="geometry">
+            <rect>
+             <x>60</x>
+             <y>80</y>
+             <width>89</width>
+             <height>25</height>
+            </rect>
+           </property>
+           <property name="text">
+            <string>Create Room</string>
+           </property>
+          </widget>
          </widget>
         </item>
         <item row="0" column="1">
@@ -104,7 +117,7 @@
   <customwidget>
    <class>SnakeGameView</class>
    <extends>QGraphicsView</extends>
-   <header>snakegameview.h</header>
+   <header>snakeGameView/snakegameview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
