@@ -14,8 +14,10 @@ class Game : public QMainWindow
 public:
     Game(QWidget *parent = nullptr);
     ~Game();
-
+    void displayTextInChat(QString &msg);
     qreal gameWidth() const;
+signals:
+    void PlayerName(QString &name);
 private:
     Ui::Game *ui;
 };

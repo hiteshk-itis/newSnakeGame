@@ -1,10 +1,10 @@
-QT       += core gui
+QT       += core gui network
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 
 CONFIG += c++11
-INCLUDEPATH += $$PWD/food $$PWD/game $$PWD/snake $$PWD/snakeGameView
+INCLUDEPATH += $$PWD/food $$PWD/game $$PWD/snake $$PWD/snakeGameView $$PWD/chatClient
 # The following define makes your compiler emit warnings if you use
 # any Qt feature that has been marked deprecated (the exact warnings
 # depend on your compiler). Please consult the documentation of the
@@ -20,17 +20,35 @@ SOURCES += \
     food/food.cpp \
     main.cpp \
     game/game.cpp \
+    multiplayerpage.cpp \
+    multiplayersnakegameview.cpp \
+    newmainwindow.cpp \
     snake/snake.cpp \
-    snakeGameView/snakegameview.cpp
+    snakeGameView/snakegameview.cpp \
+    chatClient/chatclient.cpp \
+    dialog.cpp \
+    pathfinding.cpp \
+    square.cpp
+
 
 HEADERS += \
     food/food.h \
     game/game.h \
+    multiplayerpage.h \
+    multiplayersnakegameview.h \
+    newmainwindow.h \
     snake/snake.h \
-    snakeGameView/snakegameview.h
+    snakeGameView/snakegameview.h \
+    chatClient/chatclient.h \
+    dialog.h \
+    pathfinding.h \
+    square.h
 
 FORMS += \
-    game/game.ui
+    game/game.ui \
+    multiplayerpage.ui \
+    dialog.ui \
+    newmainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

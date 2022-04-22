@@ -9,10 +9,10 @@
 
 SnakeGameView::SnakeGameView(QWidget* parent)
     :QGraphicsView(parent)
+    ,d_snakeSpeed(3)
     , d_scene(new QGraphicsScene())
     ,d_fieldWidth((parentWidget()->size().width()/10)*8)
     ,d_fieldHeight(500)
-    ,d_snakeSpeed(3)
     ,d_snake(new Snake(300,70))
     ,d_food(new Food(d_fieldWidth,d_fieldHeight))
     ,d_timer(new QTimer)
@@ -29,13 +29,16 @@ SnakeGameView::SnakeGameView(QWidget* parent)
 
     d_scene->setBackgroundBrush(QColor("#c3e58d"));
     d_snake->setPos(100, 50);
+    connect(d_timer, &QTimer::timeout,[=]{
+        d_snake->moveTheSnake();
+    });
+
 d_timer->setInterval(150);
 //connect(d_timer, &QTimer::timeout,
 //        this, &SnakeGameView::isInsideBoundary);
 
 
-connect(d_timer, &QTimer::timeout,
-        d_snake, &Snake::moveTheSnake);
+
 
 connect(d_timer, &QTimer::timeout,
         this, &SnakeGameView::checkColliding);
@@ -62,6 +65,11 @@ d_timer->start();
     d_scene->addLine(LeftLine, mypen);
 
 
+
+}
+
+SnakeGameView::~SnakeGameView()
+{
 
 }
 
@@ -130,8 +138,15 @@ void SnakeGameView::generateFood()
     d_scene->addItem(d_food);
 }
 
-bool SnakeGameView::isInsideBoundary()
-{/*
+
+
+Snake *SnakeGameView::snake()
+{
+    return d_snake;
+}
+
+/*bool SnakeGameView::isInsideBoundary()
+{
     int offset = 4;
    bool a = (d_snake->childItems()[0]->pos().x() <0+offset) || (d_snake->childItems()[0]->pos().y() <0);
 
@@ -144,14 +159,15 @@ bool SnakeGameView::isInsideBoundary()
    else {
 
        return true;
-   }*/
+   }
 
-        qDebug() << d_scene->sceneRect().contains( mapToParent(d_snake->childItems()[0]->pos().toPoint()));
-}
+//        qDebug() << d_scene->sceneRect().contains( mapToParent(d_snake->childItems()[0]->pos().toPoint()));
+}*/
 
 
 void SnakeGameView::keyPressEvent(QKeyEvent *event)
 {
+
     if(event->isAutoRepeat() == true){
         return;
     }
@@ -196,14 +212,12 @@ void SnakeGameView::keyPressEvent(QKeyEvent *event)
 
     d_snake->setDirection(dir);
 
-    moveSnake();
+//    moveSnake();
 
 }
 
 void SnakeGameView::moveSnake()
 {
-
-
 
     if((d_snake->direction() == Snake::Direction::None)){
         d_timer->stop();
