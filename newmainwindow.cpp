@@ -48,25 +48,25 @@ NewMainWindow::~NewMainWindow()
 
 void NewMainWindow::keyPressEvent(QKeyEvent *e)
 {
-  if(!is_manual)
-  {
-    e->accept();
-    return;
-  }
+//  if(!is_manual)
+//  {
+//    e->accept();
+//    return;
+//  }
   bool ok = true;
   switch(e->key())
   {
     case Qt::Key_W:
-      ok = moveUp();
+      ok = moveUp(Square::Id::PlayerHead);
       break;
     case Qt::Key_S:
-      ok = moveDown();
+      ok = moveDown(Square::Id::PlayerHead);
       break;
     case Qt::Key_A:
-      ok = moveLeft();
+      ok = moveLeft(Square::Id::PlayerHead);
       break;
     case Qt::Key_D:
-      ok = moveRight();
+      ok = moveRight(Square::Id::PlayerHead);
       break;
     default:
       break;
@@ -86,7 +86,6 @@ void NewMainWindow::init()
   this->updateTimeout();
 
   ui->playground->setSpacing(0);
-  //ui->playground->setMargin(1);
   Square* b = nullptr;
   for(int i = 0; i < kSize; ++i)
   {
@@ -99,7 +98,8 @@ void NewMainWindow::init()
   }
   // initialize snake head and food
   this->setUpFoodorHead(Square::Id::Food);
-  this->setUpFoodorHead(Square::Id::Head);
+  this->setUpFoodorHead(Square::Id::AIHead);
+  this->setUpFoodorHead(Square::Id::PlayerHead);
   // setup signals and slots
   timer->setInterval(timeout);
   connect(timer, &QTimer::timeout, this, &NewMainWindow::autoMove);
@@ -117,6 +117,10 @@ bool NewMainWindow::isBlock(const Point &pos)
     if((*iter)->get_point().equal(pos))
       return true;
   }
+  for(auto iter = playerSnake.begin(); iter != playerSnake.end(); ++iter){
+      if((*iter)->get_point().equal(pos))
+        return true;
+  }
   return false;
 }
 
@@ -129,6 +133,7 @@ void NewMainWindow::setUpFoodorHead(Square::Id id)
     auto inner = iter;
     while(step-- > 0)
       ++inner;
+
     for(; !tried && inner != world.end(); ++inner)
     {
       if((*inner)->get_id() == Square::Id::None)
@@ -137,14 +142,18 @@ void NewMainWindow::setUpFoodorHead(Square::Id id)
         {
           food = *inner;
         }
-        else if(id == Square::Id::Head)
+        else if(id == Square::Id::AIHead)
         {
           snake.push_back(*inner);
+        }
+        else if(id == Square::Id::PlayerHead){
+            playerSnake.push_back(*inner);
         }
         (*inner)->set_id(id).update_style();
         return;
       }
     }
+
     tried = true;
     if((*iter)->get_id() == Square::Id::None)
     {
@@ -152,9 +161,12 @@ void NewMainWindow::setUpFoodorHead(Square::Id id)
       {
         food = *iter;
       }
-      else if(id == Square::Id::Head)
+      else if(id == Square::Id::AIHead)
       {
         snake.push_back(*iter);
+      }
+      else if(id == Square::Id::PlayerHead){
+          playerSnake.push_back(*iter);
       }
       (*iter)->set_id(id).update_style();
       return;
@@ -182,8 +194,10 @@ void NewMainWindow::on_btnRestart_clicked()
     (*iter)->label()->clear();
   }
   snake.clear();
+  playerSnake.clear();
   this->setUpFoodorHead(Square::Id::Food);
-  this->setUpFoodorHead(Square::Id::Head);
+  this->setUpFoodorHead(Square::Id::AIHead);
+  this->setUpFoodorHead(Square::Id::PlayerHead);
 }
 
 bool NewMainWindow::isReachFood(Square *head)
@@ -211,7 +225,7 @@ Square* NewMainWindow::findPoint(const Point &p)
  *  x
  */
 
-bool NewMainWindow::moveAround(const Point& target)
+bool NewMainWindow::moveAround(const Point& target, const Square::Id &id)
 {
   if(isBlock(target))
     return false;
@@ -222,48 +236,68 @@ bool NewMainWindow::moveAround(const Point& target)
     emit game_over("no target found in this world");
     return false;
   }
-  target_square->set_id(Square::Id::Head).update_style();
-  snake.front()->set_id(Square::Id::Snake).update_style();
-  snake.push_front(target_square);
+  if(id == Square::Id::AIHead){
+      target_square->set_id(Square::Id::AIHead).update_style();
+      snake.front()->set_id(Square::Id::Snake).update_style();
+      snake.push_front(target_square);
+  }
+  else if(id == Square::Id::PlayerHead){
+      target_square->set_id(Square::Id::PlayerHead).update_style();
+      playerSnake.front()->set_id(Square::Id::Snake).update_style();
+      playerSnake.push_front(target_square);
+  }
   if(isReachFood(target_square))
   {
     setUpFoodorHead(Square::Id::Food);
   }
   else
   {
-    snake.back()->set_id(Square::Id::None).update_style();
-    snake.pop_back();
+      if(id == Square::Id::AIHead){
+        snake.back()->set_id(Square::Id::None).update_style();
+        snake.pop_back();
+      }
+      else if(id == Square::Id::PlayerHead){
+          playerSnake.back()->set_id(Square::Id::None).update_style();
+          playerSnake.pop_back();
+      }
   }
-  this->setWindowTitle(QString("life: +%1s").arg(snake.size()));
+  this->setWindowTitle(QString("life: +%1s").arg(playerSnake.size()));
   return true;
 }
 
-bool NewMainWindow::moveUp()
+bool NewMainWindow::moveUp(const Square::Id &id)
 {
-  Point cur_pos = snake.front()->get_point();
+    Point cur_pos;
+    if(id == Square::Id::AIHead){
+        cur_pos = snake.front()->get_point();
+
+    }
+    else {
+        cur_pos = playerSnake.front()->get_point();
+    }
   Point target{cur_pos.x - 1, cur_pos.y};
-  return moveAround(target);
+  return moveAround(target, id);
 }
 
-bool NewMainWindow::moveDown()
+bool NewMainWindow::moveDown(const Square::Id &id)
 {
-  Point cur_pos = snake.front()->get_point();
+  Point cur_pos = (id == Square::Id::AIHead) ? snake.front()->get_point() : playerSnake.front()->get_point();
   Point target{cur_pos.x + 1, cur_pos.y};
-  return moveAround(target);
+  return moveAround(target, id);
 }
 
-bool NewMainWindow::moveLeft()
+bool NewMainWindow::moveLeft(const Square::Id &id)
 {
-  Point cur_pos = snake.front()->get_point();
+    Point cur_pos = (id == Square::Id::AIHead) ? snake.front()->get_point() : playerSnake.front()->get_point();
   Point target{cur_pos.x, cur_pos.y - 1};
-  return moveAround(target);
+  return moveAround(target, id);
 }
 
-bool NewMainWindow::moveRight()
+bool NewMainWindow::moveRight(const Square::Id &id)
 {
-  Point cur_pos = snake.front()->get_point();
+    Point cur_pos = (id == Square::Id::AIHead) ? snake.front()->get_point() : playerSnake.front()->get_point();
   Point target{cur_pos.x, cur_pos.y + 1};
-  return moveAround(target);
+  return moveAround(target, id);
 }
 
 bool NewMainWindow::randomMove(Square* vfood)
@@ -285,11 +319,11 @@ bool NewMainWindow::randomMove(Square* vfood)
   {
     for(;ok && inner != pos.end(); ++inner)
     {
-      if(moveAround(*inner))
+      if(moveAround(*inner, Square::Id::AIHead))
         return true;
       ok = false;
     }
-    if(moveAround(*outer))
+    if(moveAround(*outer, Square::Id::AIHead))
       return true;
   }
   return false;
@@ -318,7 +352,7 @@ void NewMainWindow::autoMove()
   if(real_path.size() != 0)
   {
     // shall never fire.
-    if(!moveAround(real_path.front()))
+    if(!moveAround(real_path.front(), Square::Id::AIHead))
     {
       emit game_over("<span style=\"text-align: center;"
                      "color: red; font-size: 18px\">"

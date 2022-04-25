@@ -40,7 +40,8 @@ class Square
       Snake = 0,
       Food,
       None,
-      Head,
+      AIHead,
+      PlayerHead,
     };
 
     Square(int, int);

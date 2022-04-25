@@ -55,6 +55,7 @@ private:
   const int kSize;
   Square* food;
   std::list<Square*> world;
+  std::list<Square*> playerSnake;
   std::list<Square*> snake;
   std::list<Square*> vsnake;
   std::list<Point> real_path;
@@ -78,15 +79,15 @@ private:
 
   Square* findPoint(const Point& p);
 
-  bool moveAround(const Point &target);
+  bool moveAround(const Point &target, const Square::Id &id);
 
-  bool moveUp();
+  bool moveUp(const Square::Id &id);
 
-  bool moveDown();
+  bool moveDown(const Square::Id &id);
 
-  bool moveLeft();
+  bool moveLeft(const Square::Id &id);
 
-  bool moveRight();
+  bool moveRight(const Square::Id &id);
 
   bool randomMove(Square *vfood);
 

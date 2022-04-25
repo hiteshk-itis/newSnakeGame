@@ -60,6 +60,7 @@ Square::Square(int x_, int y_)
 {
   label_->setFixedSize(27, 22);
   label_->setAlignment(Qt::AlignCenter);
+
   this->update_style();
 }
 
@@ -81,9 +82,12 @@ void Square::update_style()
     case Id::Food:
       label_->setStyleSheet("background-color: black");
       break;
-    case Id::Head:
+    case Id::AIHead:
       label_->setStyleSheet("background-color: green");
       break;
+  case Id::PlayerHead:
+    label_->setStyleSheet("background-color: purple");
+    break;
   }
 }
 
