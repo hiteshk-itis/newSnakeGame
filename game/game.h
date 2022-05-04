@@ -16,9 +16,11 @@ public:
     ~Game();
     void displayTextInChat(QString &msg);
     qreal gameWidth() const;
+    void PlayerNameCalled();
 signals:
     void PlayerName(QString &name);
 private:
     Ui::Game *ui;
+    QString d_user;
 };
 #endif // GAME_H

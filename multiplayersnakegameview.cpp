@@ -5,6 +5,8 @@
 MultiPlayerSnakeGameView::MultiPlayerSnakeGameView(QWidget* parent)
     :SnakeGameView(parent)
 {
+    setDisabled(true);
+
     connect(d_timer, &QTimer::timeout,[=]{
 
         for(Snake* sn : d_snakes.values()){
@@ -38,28 +40,43 @@ void MultiPlayerSnakeGameView::generateOtherSnakes(QHash<QString, QPointF> snake
 
         d_scene->addItem(temp_snake);
     }
+    generateManyFoods(50);
+    setDisabled(false);
 
 }
 
 void MultiPlayerSnakeGameView::directionChanged(QString name, int d)
 {
-//    if(d_user == name){
-//        return;
-//    }
-    if(!d_snakes.keys().contains(name)){
-        qDebug() << "d_snakes does not contain the room name.";
+    if(d_user == name){
+        return;
+    }
+    if(!(d_snakes.keys().contains(name))){
+        qDebug() << "d_snakes does not contain the snake "<< name;
         return;
     }
     Snake* &snake = d_snakes[name];
 
-    qDebug() << "dir: "<<snake->direction();
     snake->setDirection(Snake::Direction(d));
-    qDebug() << "i am in the slot";
+
 }
 
 void MultiPlayerSnakeGameView::getPlayerName(const QString name)
 {
     d_user = name;
+}
+
+void MultiPlayerSnakeGameView::otherPlayerFoodEaten(QString playerName)
+{
+    if(d_user == playerName){
+        return;
+    }
+
+
+   Snake* &snk = d_snakes[playerName];
+
+   snk->increaseScore();
+   snk->increaseSnakeLength();
+
 }
 
 
@@ -114,5 +131,12 @@ void MultiPlayerSnakeGameView::keyPressEvent(QKeyEvent *event)
     }
 
 }
+
+void MultiPlayerSnakeGameView::generateManyFoods(int n)
+{
+
+}
+
+
 
 

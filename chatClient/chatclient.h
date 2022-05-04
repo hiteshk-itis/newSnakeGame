@@ -28,9 +28,11 @@ signals:
     void allPlayersJoined(qreal &n);
     void generatePlayers(QHash<QString, QPointF>);
     void directionChanged(QString, int);
+    void otherUserFoodEaten(QString playerName);
 public slots:
     void sendDirection(Snake::Direction);
     void sendInitialPos(QPointF);
+    void sendFoodEaten(const QString name, const int score);
 
 private slots:
     void errorOnConn(QAbstractSocket::SocketError);

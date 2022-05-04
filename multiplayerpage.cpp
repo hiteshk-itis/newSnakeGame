@@ -11,7 +11,6 @@ MultiPlayerPage::MultiPlayerPage(QWidget *parent) :
     d_snake = ui->graphicsView_multiPlayer->snake();
     d_chatClient =  ui->widget_mpChatClient;
 
-
 }
 
 MultiPlayerPage::~MultiPlayerPage()

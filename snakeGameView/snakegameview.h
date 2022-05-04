@@ -32,17 +32,20 @@ public:
     void generateFood();
     bool isInsideBoundary();
 
-
+public slots:
+    void getPlayerName(const QString name);
 
     Snake* snake();
 
 signals:
     void scoreDisplay(qreal score);
-
+    void mpFoodEaten(const QString d_user, const int score);
+    void callPlayerName();
 
 private:
     qreal d_snakeSpeed;
     qreal d_score;
+
 
 //    QPropertyAnimation* move_anim;
 
@@ -59,8 +62,8 @@ protected:
     Snake *d_snake;
     Food *d_food;
     QTimer* d_timer;
+    static QString d_user;
     void moveSnake();
 
 };
-
 #endif // SNAKEGAMEVIEW_H

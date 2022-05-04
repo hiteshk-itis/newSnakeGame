@@ -8,6 +8,8 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMetaEnum>
+#include <QNetworkConfigurationManager>
+#include <QNetworkInterface>
 #include <QRadioButton>
 #include <QSpinBox>
 #include <QStringLiteral>
@@ -27,7 +29,16 @@ ChatClient::ChatClient(QWidget* parent) :
   , d_port(52693)
   , d_address("127.0.0.1")
 {
+QNetworkConfigurationManager mgr;
+QNetworkConfiguration cfg = mgr.defaultConfiguration();
+if(cfg.state() == QNetworkConfiguration::Active){
 
+    for(QHostAddress &adr : QNetworkInterface::allAddresses()){
+        if(adr.protocol() == QAbstractSocket::IPv4Protocol){
+            d_address = adr.toString();
+        }
+    }
+}
     
     connect(d_socket, &QTcpSocket::connected, [=]{
         status->appendPlainText("== Connected to server");
@@ -205,6 +216,21 @@ void ChatClient::sendInitialPos(QPointF pt)
     d_socket->write(messageArray);
 }
 
+void ChatClient::sendFoodEaten(const QString name, const int score)
+{
+    qDebug() << "sendFoodEaten";
+    QJsonObject obj;
+    obj.insert("purpose", tr("food Eaten"));
+    obj.insert("playerName", name);
+    obj.insert("score", score);
+
+    QJsonDocument foodDoc(obj);
+
+    QByteArray messageArray = foodDoc.toJson(QJsonDocument::Indented);
+    messageArray.append(23);
+    d_socket->write(messageArray);
+}
+
 void ChatClient::connectToServer()
 {
 
@@ -219,7 +245,7 @@ void ChatClient::connectToServer()
 
             d_socket->connectToHost(d_address, d_port); // asynchronous call
             status->appendPlainText(tr("== Connecting..."));
-//            d_socket->waitForConnected(3000);
+            d_socket->waitForConnected(3000);
             updateGui(QAbstractSocket::ConnectingState);
         }
     }
@@ -290,21 +316,27 @@ void ChatClient::readyRead()
                 }
             }
             if(purpose.toString() == "set Direction"){
-                qDebug() << "abcdefghijklmnopqrstuvwxyz";
+
                 QJsonValue snakePlayerName = obj.value(tr("playerName"));
                 int snakeDirection = obj.value(tr("snakeDirection")).toInt();
-                qDebug() << "snakeDirection" << snakeDirection;
-                QTime t;
-               qDebug() << "time is:" << t.currentTime();
+
+
+
                 emit directionChanged(snakePlayerName.toString(), snakeDirection);
 
-                qDebug() << "snakeDirection again" << snakeDirection;
+
 
             }
             if(purpose.toString() == "All Players Joined"){
                 qreal num = obj.value(tr("players")).toInt();
                 emit allPlayersJoined(num);
                 players = num;
+            }
+
+            if(purpose.toString() == "food Eaten"){
+                QString playerName = obj.value("playerName").toString();
+                qDebug() << "food eaten" << obj;
+                emit otherUserFoodEaten(playerName);
             }
         }
 
