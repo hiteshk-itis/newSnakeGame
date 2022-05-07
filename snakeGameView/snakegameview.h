@@ -27,11 +27,13 @@ public:
     void setSnakeSpeed(const qreal &snakeSpeed);
 
     void viewSnakeLengthIncrease();
-    void checkColliding();
+    void checkCollidingwSnake();
+    void checkCollidingwBoundary();
     void foodEaten();
     void generateFood();
     bool isInsideBoundary();
 
+    void HomeBtnClicked();
 public slots:
     void getPlayerName(const QString name);
 
@@ -45,7 +47,7 @@ signals:
 private:
     qreal d_snakeSpeed;
     qreal d_score;
-
+    void displayNameAndScore();
 
 //    QPropertyAnimation* move_anim;
 
@@ -62,8 +64,18 @@ protected:
     Snake *d_snake;
     Food *d_food;
     QTimer* d_timer;
+    QGraphicsTextItem* d_nameAndScore;
     static QString d_user;
     void moveSnake();
+    void gameOver();
+
+    QVector<int> d_scores;
+
+
+    QGraphicsLineItem* topLine;
+    QGraphicsLineItem* bottomLine;
+    QGraphicsLineItem* rightLine;
+    QGraphicsLineItem* leftLine;
 
 };
 #endif // SNAKEGAMEVIEW_H

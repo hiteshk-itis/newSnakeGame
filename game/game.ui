@@ -6,97 +6,73 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>926</width>
-    <height>647</height>
+    <width>864</width>
+    <height>675</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Game</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="currentIndex">
        <number>0</number>
       </property>
       <widget class="QWidget" name="singlPlayerPage">
-       <layout class="QGridLayout" name="gridLayout_3">
-        <item row="0" column="2">
-         <widget class="QGroupBox" name="groupBox">
-          <property name="title">
-           <string>Player Info</string>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_2">
-           <item row="2" column="1">
-            <widget class="QPushButton" name="startPushButton">
-             <property name="text">
-              <string>Start</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="1">
-            <widget class="QLabel" name="playerNameLabel">
-             <property name="text">
-              <string>pl. Name</string>
-             </property>
-            </widget>
-           </item>
-           <item row="0" column="0">
-            <widget class="QLabel" name="label">
-             <property name="text">
-              <string>TextLabel</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="0">
-            <widget class="QLabel" name="label_3">
-             <property name="text">
-              <string>Score</string>
-             </property>
-            </widget>
-           </item>
-           <item row="1" column="1">
-            <widget class="QLCDNumber" name="scoreLcdNumber"/>
-           </item>
-           <item row="3" column="1">
-            <widget class="QPushButton" name="home_btn">
-             <property name="text">
-              <string>Home</string>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
-        </item>
-        <item row="0" column="0" rowspan="2">
-         <widget class="SnakeGameView" name="graphicsView"/>
-        </item>
-        <item row="1" column="2">
-         <widget class="QGroupBox" name="groupBox_2">
-          <property name="locale">
-           <locale language="English" country="World"/>
-          </property>
-          <property name="title">
-           <string>Chat Box</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-          </property>
-          <property name="flat">
-           <bool>true</bool>
-          </property>
-          <property name="checkable">
-           <bool>false</bool>
-          </property>
-          <layout class="QGridLayout" name="gridLayout_4">
-           <item row="0" column="0">
-            <widget class="QWidget" name="widget_chatClient" native="true"/>
-           </item>
-          </layout>
-         </widget>
-        </item>
-       </layout>
+       <property name="styleSheet">
+        <string notr="true"/>
+       </property>
+       <widget class="SnakeGameView" name="graphicsView">
+        <property name="geometry">
+         <rect>
+          <x>9</x>
+          <y>9</y>
+          <width>821</width>
+          <height>511</height>
+         </rect>
+        </property>
+       </widget>
+       <widget class="QWidget" name="">
+        <property name="geometry">
+         <rect>
+          <x>291</x>
+          <y>581</y>
+          <width>214</width>
+          <height>27</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="home_btn">
+           <property name="text">
+            <string>Home</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QPushButton" name="startPushButton">
+           <property name="text">
+            <string>Start</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
       </widget>
       <widget class="MultiPlayerPage" name="multiplayerPage"/>
       <widget class="QWidget" name="aiPage">
@@ -107,45 +83,39 @@
        </layout>
       </widget>
       <widget class="QWidget" name="mainPage">
-       <widget class="QPushButton" name="pushButton_createRoom">
-        <property name="geometry">
-         <rect>
-          <x>370</x>
-          <y>260</y>
-          <width>97</width>
-          <height>25</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>Create Room</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_singlePlayer">
-        <property name="geometry">
-         <rect>
-          <x>360</x>
-          <y>200</y>
-          <width>97</width>
-          <height>25</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>single Player</string>
-        </property>
-       </widget>
-       <widget class="QPushButton" name="pushButton_ai">
-        <property name="geometry">
-         <rect>
-          <x>400</x>
-          <y>350</y>
-          <width>89</width>
-          <height>25</height>
-         </rect>
-        </property>
-        <property name="text">
-         <string>ai page</string>
-        </property>
-       </widget>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="1">
+         <widget class="QPushButton" name="pushButton_ai">
+          <property name="text">
+           <string>ai page</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="2" rowspan="2">
+         <widget class="QPushButton" name="pushButton_createRoom">
+          <property name="text">
+           <string>Create Room</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0" rowspan="2">
+         <widget class="QFrame" name="frame">
+          <property name="frameShape">
+           <enum>QFrame::StyledPanel</enum>
+          </property>
+          <property name="frameShadow">
+           <enum>QFrame::Raised</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="2">
+         <widget class="QPushButton" name="pushButton_singlePlayer">
+          <property name="text">
+           <string>single Player</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </widget>
      </widget>
     </item>
@@ -156,7 +126,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>926</width>
+     <width>864</width>
      <height>22</height>
     </rect>
    </property>

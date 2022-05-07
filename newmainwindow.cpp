@@ -450,8 +450,11 @@ void NewMainWindow::on_btnAutoManual_clicked()
 
 void NewMainWindow::on_game_over(QString msg)
 {
+  on_btnAutoManual_clicked();
   QMessageBox::information(this, "Game Over", msg);
-  qApp->quit();
+  on_btnRestart_clicked();
+
+//  qApp->quit();
 }
 
 void NewMainWindow::on_actionQuit_triggered()

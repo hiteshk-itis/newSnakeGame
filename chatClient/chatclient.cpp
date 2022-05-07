@@ -75,6 +75,8 @@ void ChatClient::createRoomClicked()
 
     QDialog *roomInfoWin = new QDialog(this);
 
+    QLabel* lbl_ipAddr = new QLabel("Server's IP Address", roomInfoWin);
+    QLineEdit* ipAddr = new QLineEdit(roomInfoWin);
 
     QLabel* lbl_roomName = new QLabel("room Name: ", roomInfoWin);
     QLineEdit* room_name= new QLineEdit(roomInfoWin);
@@ -99,14 +101,16 @@ void ChatClient::createRoomClicked()
     status = new QPlainTextEdit(roomInfoWin);
     status->appendPlainText("\tStatus here");
     status->setEnabled(false);
-    connectToServer();
+//    connectToServer();
+
     QDialogButtonBox* btn_boxConn = new QDialogButtonBox(roomInfoWin);
     QPushButton* connectBtn = btn_boxConn->addButton("connect", QDialogButtonBox::AcceptRole);
 
-      QPushButton* disconnectBtn =  btn_boxConn->addButton("disconnect", QDialogButtonBox::RejectRole);
-
+    QPushButton* disconnectBtn =  btn_boxConn->addButton("disconnect", QDialogButtonBox::RejectRole);
 
 connect(connectBtn, &QPushButton::clicked, [=]{
+    d_address = ipAddr->text();
+    connectToServer();
     const QString &roomName = room_name->text();
 
     const QString &roomPassword = room_password->text();
@@ -130,23 +134,26 @@ connect(connectBtn, &QPushButton::clicked, [=]{
 
     QGridLayout *glayoutRoomInfo = new QGridLayout(roomInfoWin);
 
-    glayoutRoomInfo->addWidget(lbl_roomName, 0, 0);
-    glayoutRoomInfo->addWidget(room_name, 0, 1);
+    glayoutRoomInfo->addWidget(lbl_ipAddr, 0, 0);
+    glayoutRoomInfo->addWidget(ipAddr, 0, 1);
 
-    glayoutRoomInfo->addWidget(lbl_roomPasswd, 1, 0);
-    glayoutRoomInfo->addWidget(room_password, 1, 1);
+    glayoutRoomInfo->addWidget(lbl_roomName, 1, 0);
+    glayoutRoomInfo->addWidget(room_name, 1, 1);
 
-    glayoutRoomInfo->addWidget(createRoom, 2, 0);
-    glayoutRoomInfo->addWidget(joinRoom, 2, 1);
+    glayoutRoomInfo->addWidget(lbl_roomPasswd, 2, 0);
+    glayoutRoomInfo->addWidget(room_password, 2, 1);
 
-    glayoutRoomInfo->addWidget(lbl_players, 3,0);
-    glayoutRoomInfo->addWidget(no_of_players, 3,1);
+    glayoutRoomInfo->addWidget(createRoom, 3, 0);
+    glayoutRoomInfo->addWidget(joinRoom, 3, 1);
 
-    glayoutRoomInfo->addWidget(btn_boxConn, 4,1);
+    glayoutRoomInfo->addWidget(lbl_players, 4,0);
+    glayoutRoomInfo->addWidget(no_of_players, 4,1);
+
+    glayoutRoomInfo->addWidget(btn_boxConn, 5,1);
 
 
-    glayoutRoomInfo->addWidget(status, 5, 0, 1,2);
-    glayoutRoomInfo->addWidget(btn_box, 6, 1);
+    glayoutRoomInfo->addWidget(status, 6, 0, 1,2);
+    glayoutRoomInfo->addWidget(btn_box, 7, 1);
 
 
     roomInfoWin->setTabOrder(room_password, createRoom);
@@ -389,7 +396,6 @@ void ChatClient::sendRoomInfo(const QString &roomName, const QString &roomPasswo
     d_socket->write(roomInfo);
     chat->appendPlainText(doc.toJson());
     status->appendPlainText(doc.toJson());
-
 }
 
 void ChatClient::errorOnConn(QAbstractSocket::SocketError err)

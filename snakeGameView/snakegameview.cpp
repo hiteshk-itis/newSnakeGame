@@ -5,17 +5,20 @@
 #include <QGraphicsItem>
 
 #include <QDebug>
+#include <QMessageBox>
+#include <QStringLiteral>
 #include <QTimer>
 QString SnakeGameView::d_user;
 SnakeGameView::SnakeGameView(QWidget* parent)
     :QGraphicsView(parent)
     ,d_snakeSpeed(3)
     , d_scene(new QGraphicsScene())
-    ,d_fieldWidth((parentWidget()->size().width()/10)*8)
-    ,d_fieldHeight(500)
+    ,d_fieldWidth(700)
+    ,d_fieldHeight(550)
     ,d_snake(new Snake(300,70))
     ,d_food(new Food(d_fieldWidth,d_fieldHeight))
     ,d_timer(new QTimer)
+    ,d_nameAndScore(new QGraphicsTextItem())
 
 
 {
@@ -40,9 +43,10 @@ emit callPlayerName();
 
 
 
-
 connect(d_timer, &QTimer::timeout,
-        this, &SnakeGameView::checkColliding);
+        this, &SnakeGameView::checkCollidingwBoundary);
+connect(d_timer, &QTimer::timeout,
+        this, &SnakeGameView::checkCollidingwSnake);
 d_timer->start();
     d_snake->setZValue(1);
     d_food->setZValue(2);
@@ -53,18 +57,17 @@ d_timer->start();
 
     // set border lines
     QPen mypen = QPen(Qt::red);
-    mypen.setWidth(0);
+    mypen.setWidth(6);
 
     QLineF TopLine(d_scene->sceneRect().topLeft(), d_scene->sceneRect().topRight());
     QLineF LeftLine(d_scene->sceneRect().topLeft(), d_scene->sceneRect().bottomLeft());
     QLineF RightLine(d_scene->sceneRect().topRight(), d_scene->sceneRect().bottomRight());
     QLineF BottomLine(d_scene->sceneRect().bottomLeft(), d_scene->sceneRect().bottomRight());
 
-    d_scene->addLine(TopLine, mypen);
-    d_scene->addLine(BottomLine, mypen);
-    d_scene->addLine(RightLine, mypen);
-    d_scene->addLine(LeftLine, mypen);
-
+   topLine = d_scene->addLine(TopLine, mypen);
+    bottomLine = d_scene->addLine(BottomLine, mypen);
+    rightLine = d_scene->addLine(RightLine, mypen);
+    leftLine = d_scene->addLine(LeftLine, mypen);
 
 
 }
@@ -112,15 +115,24 @@ void SnakeGameView::viewSnakeLengthIncrease()
     d_snake->increaseSnakeLength();
 }
 
-void SnakeGameView::checkColliding()
+void SnakeGameView::checkCollidingwSnake()
 {
 
 
     for(QGraphicsItem* item: d_scene->collidingItems(d_food)){
         if(qgraphicsitem_cast<Snake*>(item)){;
             d_food->implodeOnEating();
-            qDebug() << "snake game view check colliding" << d_user;
             foodEaten();
+        }
+    }
+}
+
+void SnakeGameView::checkCollidingwBoundary()
+{
+    for(QGraphicsItem* item: d_scene->collidingItems(d_snake->childItems()[0])){
+        if(qgraphicsitem_cast<QGraphicsLineItem*>(item)){;
+            gameOver();
+
         }
     }
 }
@@ -130,6 +142,8 @@ void SnakeGameView::foodEaten()
     d_snake->increaseScore();
     emit scoreDisplay(d_snake->score());
     emit mpFoodEaten(d_user, d_snake->score());
+
+    displayNameAndScore();
     d_snake->increaseSnakeLength();
     generateFood();
 
@@ -146,6 +160,9 @@ void SnakeGameView::getPlayerName(const QString name)
     d_user = name;
     d_snake->setObjectName(d_user);
 
+    displayNameAndScore();
+
+
 }
 
 
@@ -153,6 +170,26 @@ void SnakeGameView::getPlayerName(const QString name)
 Snake *SnakeGameView::snake()
 {
     return d_snake;
+}
+
+void SnakeGameView::displayNameAndScore()
+{
+    QFont nameAndScoreFont;
+    nameAndScoreFont.setFamily("Helvetica");
+    nameAndScoreFont.setCapitalization(QFont::Capitalize);
+    nameAndScoreFont.setItalic(true);
+    nameAndScoreFont.setPointSize(12);
+
+
+    QString nameAndScoreHtml = QStringLiteral("<table>"
+                               "<tr><td>Name: </td><td>%1</td></tr>"
+                                "<tr><td>Score: </td><td>%2</td></tr>"
+                               "</table>").arg(d_user).arg(d_snake->score());
+    d_nameAndScore->setFont(nameAndScoreFont);
+    d_nameAndScore->setDefaultTextColor(Qt::white);
+    d_scene->removeItem(d_nameAndScore);
+    d_nameAndScore->setHtml(nameAndScoreHtml);
+    d_scene->addItem(d_nameAndScore);
 }
 
 /*bool SnakeGameView::isInsideBoundary()
@@ -235,6 +272,33 @@ void SnakeGameView::moveSnake()
     else if(!(d_timer->isActive())){
             d_timer->start();
     }
+}
+
+void SnakeGameView::gameOver()
+{
+    d_timer->stop();
+    QMessageBox::warning(this, "Game Over", tr("GAME OVER\n%1").arg(d_snake->score()));
+
+}
+
+void SnakeGameView::HomeBtnClicked()
+{QMessageBox msgBox;
+    msgBox.setText("Are you Sure?");
+    msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+    msgBox.setDefaultButton(QMessageBox::Yes);
+
+    int ret = msgBox.exec();
+
+    switch (ret) {
+    case QMessageBox::Yes:
+        gameOver();
+        break;
+    case QMessageBox::No:
+        break;
+    default:
+        break;
+    }
+
 }
 
 

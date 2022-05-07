@@ -14,6 +14,7 @@ Game::Game(QWidget *parent)
     ui->setupUi(this);
     ui->stackedWidget->setCurrentWidget(ui->mainPage);
 
+
     // displaying name window
     QDialog *nameWin = new QDialog(this);
     QVBoxLayout* vlayout = new QVBoxLayout(nameWin);
@@ -25,26 +26,33 @@ Game::Game(QWidget *parent)
 
     MultiPlayerSnakeGameView* graphicsView_multiPlayer = ui->multiplayerPage->findChild<MultiPlayerSnakeGameView*>("graphicsView_multiPlayer");
 
-QDialogButtonBox* btn_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, nameWin);
+    QDialogButtonBox* btn_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, nameWin);
 
     connect(userName, &QLineEdit::returnPressed, [=]{
-       ui->playerNameLabel->setText(userName->text());
+        d_user = userName->text();
     });
 
-
-
+connect(nameWin, &QDialog::accepted, userName, &QLineEdit::returnPressed);
 connect(btn_box, &QDialogButtonBox::accepted, nameWin, &QDialog::accept);
 connect(btn_box, &QDialogButtonBox::rejected, nameWin, &QDialog::reject);
 
 vlayout->addWidget(userName);
 vlayout->addWidget(btn_box);
 nameWin->exec();
-d_user = ui->playerNameLabel->text();
+
 QString &name = d_user;
+
 //========================================================================================================================
+
+ui->graphicsView->move(QPoint((ui->singlPlayerPage->width()/2)-200, 20));
+
+QPixmap mPlayers(":/img/res/undraw_game_day_ucx9.svg");
+QPixmap gConsole(":/img/res/undraw_Gaming_re_cma2.png");
+
 
     // connecting home btns with go to home page action
     connect(ui->actionHome, &QAction::triggered, [=]{
+        ui->graphicsView->HomeBtnClicked();
         ui->stackedWidget->setCurrentWidget(ui->mainPage);
     });
     QPushButton* multiPlayerHomeBtn =ui->multiplayerPage->findChild<QPushButton*>("home_btn");
@@ -70,14 +78,13 @@ QString &name = d_user;
     connect(widget_mpChatClient, &ChatClient::disableCreateRoom, [=](bool state){
         ui->pushButton_createRoom->setEnabled(!state);
     });
+
     connect(ui->startPushButton, &QPushButton::clicked,
             ui->graphicsView, &SnakeGameView::viewSnakeLengthIncrease);
 
 
-
-
-    connect(ui->graphicsView, SIGNAL(scoreDisplay(qreal)),
-            ui->scoreLcdNumber, SLOT(display(qreal)));
+//    connect(ui->graphicsView, SIGNAL(scoreDisplay(qreal)),
+//            ui->scoreLcdNumber, SLOT(display(qreal)));
 
 // send the player name to all the classes
     connect(this, &Game::PlayerName, widget_mpChatClient,
@@ -121,7 +128,7 @@ QString &name = d_user;
 
     emit PlayerName(name);
 
-    ui->scoreLcdNumber->setSegmentStyle(QLCDNumber::Flat);
+//    ui->scoreLcdNumber->setSegmentStyle(QLCDNumber::Flat);
 }
 
 Game::~Game()

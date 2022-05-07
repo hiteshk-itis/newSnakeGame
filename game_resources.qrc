@@ -1,0 +1,6 @@
+<RCC>
+    <qresource prefix="/img">
+        <file>res/undraw_Gaming_re_cma2.png</file>
+        <file>res/undraw_game_day_ucx9.svg</file>
+    </qresource>
+</RCC>

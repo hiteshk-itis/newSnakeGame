@@ -9,9 +9,9 @@ Food::Food(qreal w, qreal h, QGraphicsItem* parent)
     ,m_implosion(false)
 {
     QRandomGenerator *r = new QRandomGenerator();
-    qint32 random_x = r->global()->bounded(0, w);
-    qint32 random_y = r->global()->bounded(0, h);
-
+    qint32 random_x = r->global()->bounded(0, (int)w);
+    qint32 random_y = r->global()->bounded(0, (int)h);
+    delete r;
     setRect(random_x, random_y, 10,10);
     setBrush(Qt::yellow);
 
