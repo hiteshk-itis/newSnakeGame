@@ -6,19 +6,29 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>864</width>
-    <height>675</height>
+    <width>974</width>
+    <height>686</height>
    </rect>
   </property>
+  <property name="focusPolicy">
+   <enum>Qt::StrongFocus</enum>
+  </property>
   <property name="windowTitle">
-   <string>Game</string>
+   <string>Serpentine Series</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">font-family: helvetica; 
+</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QHBoxLayout" name="horizontalLayout">
     <item>
      <widget class="QStackedWidget" name="stackedWidget">
+      <property name="styleSheet">
+       <string notr="true"/>
+      </property>
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="singlPlayerPage">
        <property name="styleSheet">
@@ -34,13 +44,13 @@
          </rect>
         </property>
        </widget>
-       <widget class="QWidget" name="">
+       <widget class="QWidget" name="layoutWidget">
         <property name="geometry">
          <rect>
           <x>291</x>
           <y>581</y>
           <width>214</width>
-          <height>27</height>
+          <height>32</height>
          </rect>
         </property>
         <layout class="QHBoxLayout" name="horizontalLayout_2">
@@ -83,39 +93,296 @@
        </layout>
       </widget>
       <widget class="QWidget" name="mainPage">
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="1">
-         <widget class="QPushButton" name="pushButton_ai">
-          <property name="text">
-           <string>ai page</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" rowspan="2">
+       <widget class="QFrame" name="side_pic_frame">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>961</width>
+          <height>621</height>
+         </rect>
+        </property>
+        <property name="frameShape">
+         <enum>QFrame::StyledPanel</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <widget class="QFrame" name="frame_btns">
+         <property name="geometry">
+          <rect>
+           <x>580</x>
+           <y>0</y>
+           <width>371</width>
+           <height>621</height>
+          </rect>
+         </property>
+         <property name="focusPolicy">
+          <enum>Qt::StrongFocus</enum>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QPushButton{
+border-radius: 20px;
+background-color: limegreen;
+color:white;
+}
+QPushButton:hover:pressed{
+background-color: white;
+color: limegreen;
+}</string>
+         </property>
+         <property name="frameShape">
+          <enum>QFrame::NoFrame</enum>
+         </property>
+         <property name="frameShadow">
+          <enum>QFrame::Raised</enum>
+         </property>
          <widget class="QPushButton" name="pushButton_createRoom">
+          <property name="geometry">
+           <rect>
+            <x>70</x>
+            <y>500</y>
+            <width>211</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton{
+border-radius: 20px;
+font-size: 20px; 
+font-family: Helvetica;
+
+
+
+background-color: limegreen;
+color:white;
+}
+
+QPushButton:hover{
+
+
+background-color: #e1f5e6;
+color: limegreen;
+border-style: solid; 
+border-color: limegreen;
+border-width: 1px; 
+}
+
+
+QPushButton:pressed{
+background-color: gray;
+color: limegreen;
+
+}</string>
+          </property>
           <property name="text">
-           <string>Create Room</string>
+           <string>MultiPlayer</string>
           </property>
          </widget>
-        </item>
-        <item row="1" column="0" rowspan="2">
-         <widget class="QFrame" name="frame">
-          <property name="frameShape">
-           <enum>QFrame::StyledPanel</enum>
+         <widget class="QPushButton" name="pushButton_ai">
+          <property name="geometry">
+           <rect>
+            <x>70</x>
+            <y>550</y>
+            <width>211</width>
+            <height>41</height>
+           </rect>
           </property>
-          <property name="frameShadow">
-           <enum>QFrame::Raised</enum>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton{
+border-radius: 20px;
+font-size: 20px; 
+font-family: Helvetica;
+
+
+
+background-color: limegreen;
+color:white;
+}
+
+QPushButton:hover{
+
+
+background-color: #e1f5e6;
+color: limegreen;
+border-style: solid; 
+border-color: limegreen;
+border-width: 1px; 
+}
+
+
+QPushButton:pressed{
+background-color: gray;
+color: limegreen;
+
+}</string>
+          </property>
+          <property name="text">
+           <string>vs Computer</string>
           </property>
          </widget>
-        </item>
-        <item row="2" column="2">
          <widget class="QPushButton" name="pushButton_singlePlayer">
+          <property name="geometry">
+           <rect>
+            <x>70</x>
+            <y>450</y>
+            <width>211</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="cursor">
+           <cursorShape>PointingHandCursor</cursorShape>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QPushButton{
+border-radius: 20px;
+font-size: 20px; 
+font-family: Helvetica;
+
+
+
+background-color: limegreen;
+color:white;
+}
+
+QPushButton:hover{
+
+
+background-color: #e1f5e6;
+color: limegreen;
+border-style: solid; 
+border-color: limegreen;
+border-width: 1px; 
+}
+
+
+QPushButton:pressed{
+background-color: gray;
+color: limegreen;
+
+}</string>
+          </property>
           <property name="text">
-           <string>single Player</string>
+           <string>Single Player</string>
           </property>
          </widget>
-        </item>
-       </layout>
+         <widget class="QLabel" name="label_icon">
+          <property name="geometry">
+           <rect>
+            <x>90</x>
+            <y>140</y>
+            <width>171</width>
+            <height>121</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLable{
+background: url(:/img/res/pngkit_snake-cartoon-png_1033742.png);
+}</string>
+          </property>
+          <property name="text">
+           <string>Serpent</string>
+          </property>
+          <property name="alignment">
+           <set>Qt::AlignCenter</set>
+          </property>
+         </widget>
+         <widget class="QLineEdit" name="userName">
+          <property name="geometry">
+           <rect>
+            <x>90</x>
+            <y>320</y>
+            <width>171</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">QLineEdit{
+padding: 5px; 
+font-family: Helvetica; 
+border-radius: 5px;
+}</string>
+          </property>
+          <property name="placeholderText">
+           <string>Username</string>
+          </property>
+         </widget>
+         <widget class="QLabel" name="label">
+          <property name="geometry">
+           <rect>
+            <x>100</x>
+            <y>260</y>
+            <width>161</width>
+            <height>31</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true">font-family: Helvetica; 
+font-size: 19px; 
+color: #ba2e18; </string>
+          </property>
+          <property name="text">
+           <string>Serpentine Series</string>
+          </property>
+         </widget>
+         <widget class="QWidget" name="layoutWidget">
+          <property name="geometry">
+           <rect>
+            <x>60</x>
+            <y>400</y>
+            <width>221</width>
+            <height>24</height>
+           </rect>
+          </property>
+          <layout class="QHBoxLayout" name="horizontalLayout_3">
+           <item>
+            <widget class="Line" name="line">
+             <property name="styleSheet">
+              <string notr="true">background: lightslategrey; </string>
+             </property>
+             <property name="frameShadow">
+              <enum>QFrame::Raised</enum>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_2">
+             <property name="styleSheet">
+              <string notr="true">background: none;
+font-family: helvetica; 
+color: lightslategray;  </string>
+             </property>
+             <property name="text">
+              <string>Choose</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="Line" name="line_2">
+             <property name="styleSheet">
+              <string notr="true">background: lightslategray; </string>
+             </property>
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </widget>
       </widget>
      </widget>
     </item>
@@ -126,8 +393,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>864</width>
-     <height>22</height>
+     <width>974</width>
+     <height>27</height>
     </rect>
    </property>
   </widget>

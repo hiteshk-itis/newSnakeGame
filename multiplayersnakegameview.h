@@ -8,7 +8,10 @@
 class MultiPlayerSnakeGameView : public SnakeGameView
 {
     Q_OBJECT
+signals:
+
 public:
+
     explicit MultiPlayerSnakeGameView(QWidget* parent = nullptr);
     ~MultiPlayerSnakeGameView();
     void allPlayersJoinedEmitted(qreal &n);
@@ -16,19 +19,23 @@ public:
     void directionChanged(QString, int);
     void getPlayerName(const QString name);
     void otherPlayerFoodEaten(QString playerName);
+    void homeBtnClicked();
+    void checkCollidingwSnakeAndFood();
+    void foodEaten();
+    void displayAllNamesAndScores();
+    void mpTimerStops();
 
 signals:
     void sendDirection(Snake::Direction);
     void sendInitialPos(QPointF);
-
+    void timerStarts();
 private:
 
     qreal d_players;
     QHash<QString, Snake*> d_snakes;
     QHash<QString, Snake::Direction> d_snakesAndDirections;
-
 //    QString d_user;
-
+    QTimer* dd_timer;
 
 
 

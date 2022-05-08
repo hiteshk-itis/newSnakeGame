@@ -7,8 +7,9 @@
 #include <QDialogButtonBox>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMessageBox>
 #include <QMetaEnum>
-#include <QNetworkConfigurationManager>
+
 #include <QNetworkInterface>
 #include <QRadioButton>
 #include <QSpinBox>
@@ -28,17 +29,9 @@ ChatClient::ChatClient(QWidget* parent) :
   , disconnect(new QPushButton("disconnect"))
   , d_port(52693)
   , d_address("127.0.0.1")
+  , d_roomEnrolled(false)
 {
-QNetworkConfigurationManager mgr;
-QNetworkConfiguration cfg = mgr.defaultConfiguration();
-if(cfg.state() == QNetworkConfiguration::Active){
 
-    for(QHostAddress &adr : QNetworkInterface::allAddresses()){
-        if(adr.protocol() == QAbstractSocket::IPv4Protocol){
-            d_address = adr.toString();
-        }
-    }
-}
     
     connect(d_socket, &QTcpSocket::connected, [=]{
         status->appendPlainText("== Connected to server");
@@ -74,7 +67,7 @@ void ChatClient::createRoomClicked()
 {
 
     QDialog *roomInfoWin = new QDialog(this);
-
+    roomInfoWin->setStyleSheet("background: none;");
     QLabel* lbl_ipAddr = new QLabel("Server's IP Address", roomInfoWin);
     QLineEdit* ipAddr = new QLineEdit(roomInfoWin);
 
@@ -128,9 +121,44 @@ connect(connectBtn, &QPushButton::clicked, [=]{
         disconnectFromServer();
     });
 
-    connect(btn_box, &QDialogButtonBox::accepted, roomInfoWin, &QDialog::accept);
+    connect(btn_box, &QDialogButtonBox::accepted, [=]{
+        if(d_socket->state() == QAbstractSocket::ConnectedState){
 
-    connect(btn_box, &QDialogButtonBox::rejected, roomInfoWin, &QDialog::reject);
+            if(d_roomEnrolled == true){
+                roomInfoWin->accept();
+
+            }
+            else{
+                QMessageBox::information(roomInfoWin, "Info", "Not enrolled in any of the rooms");
+            }
+        }
+        else{
+            QMessageBox::information(roomInfoWin, "Info", "Not Connected to Server");
+        }
+    });
+
+
+
+    connect(btn_box, &QDialogButtonBox::rejected, [=]{
+        QMessageBox msgBox;
+        msgBox.setText("Are you Sure to return to Home Screen?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
+        msgBox.setDefaultButton(QMessageBox::No);
+        int ret = msgBox.exec();
+
+        switch (ret) {
+            case QMessageBox::Yes:
+                goToHome();
+                roomInfoWin->reject();
+            break;
+        case QMessageBox::No:
+            msgBox.close();
+            break;
+        default:
+            break;
+        }
+
+    });
 
     QGridLayout *glayoutRoomInfo = new QGridLayout(roomInfoWin);
 
@@ -319,6 +347,7 @@ void ChatClient::readyRead()
                     if(d_snakesAndInitialPos.size() == players-1){
 
                         emit generatePlayers(d_snakesAndInitialPos);
+
                     }
                 }
             }
@@ -336,14 +365,16 @@ void ChatClient::readyRead()
             }
             if(purpose.toString() == "All Players Joined"){
                 qreal num = obj.value(tr("players")).toInt();
-                emit allPlayersJoined(num);
                 players = num;
+                emit allPlayersJoined(num);
+
             }
 
             if(purpose.toString() == "food Eaten"){
                 QString playerName = obj.value("playerName").toString();
                 qDebug() << "food eaten" << obj;
                 emit otherUserFoodEaten(playerName);
+
             }
         }
 
@@ -352,6 +383,9 @@ void ChatClient::readyRead()
 
         // display the text message
         chat->appendPlainText(message);
+        if(message.contains("success", Qt::CaseInsensitive)){
+            d_roomEnrolled = true;
+        }
     }
 }
 

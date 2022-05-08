@@ -10,74 +10,121 @@
 Game::Game(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::Game)
+    , dd_timer(new QTimer(this))
+    , lbl_showTimer(new QTimer(this))
+
 {
     ui->setupUi(this);
     ui->stackedWidget->setCurrentWidget(ui->mainPage);
+    QFont defaultFont;
+    defaultFont.setFamily("helvetica");
+    defaultFont.setLetterSpacing(QFont::PercentageSpacing, 300);
+    setFont(defaultFont);
 
 
-    // displaying name window
-    QDialog *nameWin = new QDialog(this);
-    QVBoxLayout* vlayout = new QVBoxLayout(nameWin);
-    QLineEdit *userName = new QLineEdit(nameWin);
-
-    userName->setPlaceholderText("Username");
+    ui->userName->setFocus();
+    setTabOrder(ui->userName, ui->pushButton_singlePlayer);
+    setTabOrder(ui->pushButton_singlePlayer, ui->pushButton_createRoom);
+    setTabOrder(ui->pushButton_createRoom, ui->pushButton_ai);
 
     ChatClient *widget_mpChatClient =  ui->multiplayerPage->findChild<ChatClient*>("widget_mpChatClient");
 
     MultiPlayerSnakeGameView* graphicsView_multiPlayer = ui->multiplayerPage->findChild<MultiPlayerSnakeGameView*>("graphicsView_multiPlayer");
 
-    QDialogButtonBox* btn_box = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, nameWin);
+    NewMainWindow* aiView =  ui->aiPage->findChild<NewMainWindow*>("widget");
 
-    connect(userName, &QLineEdit::returnPressed, [=]{
-        d_user = userName->text();
+
+    connect(ui->userName, &QLineEdit::editingFinished, [=]{
+        d_user = ui->userName->text();
+        emit PlayerName(d_user);
     });
 
-connect(nameWin, &QDialog::accepted, userName, &QLineEdit::returnPressed);
-connect(btn_box, &QDialogButtonBox::accepted, nameWin, &QDialog::accept);
-connect(btn_box, &QDialogButtonBox::rejected, nameWin, &QDialog::reject);
+//=======================================================================================================================
+    //pictures
+    ui->graphicsView->move(QPoint((ui->singlPlayerPage->width()/2)-200, 20));
 
-vlayout->addWidget(userName);
-vlayout->addWidget(btn_box);
-nameWin->exec();
+    QPixmap mPlayers(":/img/res/undraw_game_day_ucx9.svg");
+    QPixmap gConsole(":/img/res/undraw_Gaming_re_cma2.png");
+    QPixmap icon(":/img/res/pngkit_snake-cartoon-png_1033742.png");
+    QPixmap userIcon(":/img/res/user-1.svg");
+//    ui->label_userIcon->setPixmap(userIcon.scaled(ui->label_userIcon->width(), ui->label_userIcon->height(), Qt::KeepAspectRatio));
+    QString side_pic_frame = "background-image: url(:/img/res/drawio.svg);"
+                             "position: relative;"
+                             "background-repeat:no-repeat;";
+//                             "background-position: center";
 
-QString &name = d_user;
-
-//========================================================================================================================
-
-ui->graphicsView->move(QPoint((ui->singlPlayerPage->width()/2)-200, 20));
-
-QPixmap mPlayers(":/img/res/undraw_game_day_ucx9.svg");
-QPixmap gConsole(":/img/res/undraw_Gaming_re_cma2.png");
-
-
+    ui->label_icon->setPixmap(icon.scaled(ui->label_icon->width(), ui->label_icon->height(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    ui->frame_btns->setStyleSheet("background: none");
+    ui->side_pic_frame->setStyleSheet(side_pic_frame);
+    setStyleSheet("background-color: #e1f5e6");
+//====================================================================================================
     // connecting home btns with go to home page action
     connect(ui->actionHome, &QAction::triggered, [=]{
-        ui->graphicsView->HomeBtnClicked();
+
         ui->stackedWidget->setCurrentWidget(ui->mainPage);
     });
-    QPushButton* multiPlayerHomeBtn =ui->multiplayerPage->findChild<QPushButton*>("home_btn");
-    QPushButton* aiHomeBtn =ui->aiPage->findChild<QPushButton*>("home_btn");
+    connect(widget_mpChatClient, &ChatClient::goToHome, ui->actionHome, &QAction::trigger);
+//    QPushButton* multiPlayerHomeBtn =ui->multiplayerPage->findChild<QPushButton*>("home_btn");
+//    QPushButton* aiHomeBtn =ui->aiPage->findChild<QPushButton*>("home_btn");
 
-    connect(ui->home_btn, &QPushButton::clicked, ui->actionHome, &QAction::trigger);
-    connect(multiPlayerHomeBtn, &QPushButton::clicked, ui->actionHome, &QAction::trigger);
-    connect(aiHomeBtn, &QPushButton::clicked, ui->actionHome, &QAction::trigger);
+    QLabel* lbl_timer = ui->multiplayerPage->findChild<QLabel*>("timer_label");
+
+
+    connect(graphicsView_multiPlayer, &MultiPlayerSnakeGameView::timerStarts,[=]{
+        dd_timer->start(60000);
+        dd_timer->setSingleShot(true);
+        lbl_showTimer->start(100);
+        lbl_timer->setNum(dd_timer->remainingTime());
+    });
+    connect(lbl_showTimer, &QTimer::timeout, [=]{
+            lbl_timer->setNum(dd_timer->remainingTime());
+    });
+    connect(dd_timer, &QTimer::timeout, [=]{
+        emit mpTimerStop();
+    });
+
+connect(this, &Game::mpTimerStop, graphicsView_multiPlayer,
+        &MultiPlayerSnakeGameView::mpTimerStops);
+
+    connect(ui->home_btn, &QPushButton::clicked, ui->graphicsView, &SnakeGameView::HomeBtnClicked);
+    connect(ui->graphicsView, &SnakeGameView::goToHome, ui->actionHome, &QAction::trigger);
+
+    connect(graphicsView_multiPlayer, &SnakeGameView::goToHome, ui->actionHome, &QAction::trigger);
+    connect(aiView, &NewMainWindow::goToHome, ui->actionHome, &QAction::trigger);
 
     //  connecting menu buttons with respective pages
     connect(ui->pushButton_singlePlayer, &QPushButton::clicked,[=]{
+        if(d_user.isEmpty()){
+
+            ui->statusbar->showMessage("UserName field is Empty", 5000);
+            return;
+        }
+        ui->statusbar->clearMessage();
         ui->stackedWidget->setCurrentWidget(ui->singlPlayerPage);
     });
     connect(ui->pushButton_createRoom, &QPushButton::clicked,[=]{
+        if(d_user.isEmpty()){
+            ui->statusbar->showMessage("UserName field is Empty");
+            return;
+        }
+
         ui->stackedWidget->setCurrentWidget(ui->multiplayerPage);
+        widget_mpChatClient->createRoomClicked();
     });
 
     connect(ui->pushButton_ai, &QPushButton::clicked,[=]{
+        if(d_user.isEmpty()){
+            ui->statusbar->showMessage("UserName field is Empty");
+            return;
+        }
+
         ui->stackedWidget->setCurrentWidget(ui->aiPage);
     });
-
 //=====================================================================================================================
-    connect(widget_mpChatClient, &ChatClient::disableCreateRoom, [=](bool state){
-        ui->pushButton_createRoom->setEnabled(!state);
-    });
+//    connect(widget_mpChatClient, &ChatClient::disableCreateRoom, [=](bool state){
+//        ui->pushButton_createRoom->setEnabled(!state);
+//    });
+    connect(ui->multiplayerPage, &MultiPlayerPage::mpCreateOrJoinRoomClicked, widget_mpChatClient, &ChatClient::createRoomClicked);
 
     connect(ui->startPushButton, &QPushButton::clicked,
             ui->graphicsView, &SnakeGameView::viewSnakeLengthIncrease);
@@ -103,9 +150,9 @@ QPixmap gConsole(":/img/res/undraw_Gaming_re_cma2.png");
 
 
 
+//    connect(graphicsView_multiPlayer, &SnakeGameView::sendFoodPos,
+//            widget_mpChatClient, &ChatClient::sendFoodPos);
 
-    connect(ui->pushButton_createRoom, &QPushButton::clicked,
-            widget_mpChatClient, &ChatClient::createRoomClicked);
 
     connect(widget_mpChatClient, &ChatClient::allPlayersJoined,
             graphicsView_multiPlayer, &MultiPlayerSnakeGameView::allPlayersJoinedEmitted);
@@ -126,9 +173,6 @@ QPixmap gConsole(":/img/res/undraw_Gaming_re_cma2.png");
 //===================================================================================
 
 
-    emit PlayerName(name);
-
-//    ui->scoreLcdNumber->setSegmentStyle(QLCDNumber::Flat);
 }
 
 Game::~Game()

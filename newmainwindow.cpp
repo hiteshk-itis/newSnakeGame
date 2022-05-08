@@ -513,3 +513,9 @@ void NewMainWindow::on_timeout_windowIconTextChanged(const QString &iconText)
 //{
 //    delete ui;
 //}
+
+void NewMainWindow::on_home_btn_clicked()
+{
+
+    emit goToHome();
+}

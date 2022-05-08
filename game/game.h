@@ -19,8 +19,11 @@ public:
     void PlayerNameCalled();
 signals:
     void PlayerName(QString &name);
+    void mpTimerStop();
 private:
     Ui::Game *ui;
     QString d_user;
+    QTimer* dd_timer;
+    QTimer* lbl_showTimer;
 };
 #endif // GAME_H

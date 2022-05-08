@@ -1,11 +1,15 @@
 #include "multiplayersnakegameview.h"
 
+#include <QMessageBox>
 #include <QTimer>
 
 MultiPlayerSnakeGameView::MultiPlayerSnakeGameView(QWidget* parent)
     :SnakeGameView(parent)
+    , dd_timer(new QTimer(this))
 {
-    setDisabled(true);
+//    setDisabled(true);
+//    connect(d_timer, &QTimer::timeout,
+//            this, &MultiPlayerSnakeGameView::checkCollidingwSnakeAndFood);
 
     connect(d_timer, &QTimer::timeout,[=]{
 
@@ -14,6 +18,7 @@ MultiPlayerSnakeGameView::MultiPlayerSnakeGameView(QWidget* parent)
             sn->moveTheSnake();
         }
     });
+
 }
 
 MultiPlayerSnakeGameView::~MultiPlayerSnakeGameView()
@@ -40,8 +45,9 @@ void MultiPlayerSnakeGameView::generateOtherSnakes(QHash<QString, QPointF> snake
 
         d_scene->addItem(temp_snake);
     }
-    generateManyFoods(50);
-    setDisabled(false);
+emit timerStarts();
+//    generateManyFoods(15);
+//    setDisabled(false);
 
 }
 
@@ -76,7 +82,51 @@ void MultiPlayerSnakeGameView::otherPlayerFoodEaten(QString playerName)
 
    snk->increaseScore();
    snk->increaseSnakeLength();
+//   displayNameAndScore(true);
+   displayAllNamesAndScores();
 
+}
+
+void MultiPlayerSnakeGameView::homeBtnClicked()
+{
+    emit goToHome();
+}
+
+void MultiPlayerSnakeGameView::displayAllNamesAndScores()
+{
+    QFont nameAndScoreFont;
+    nameAndScoreFont.setFamily("Helvetica");
+    nameAndScoreFont.setCapitalization(QFont::Capitalize);
+    nameAndScoreFont.setItalic(true);
+    nameAndScoreFont.setPointSize(15);
+    nameAndScoreFont.setBold(true);
+
+    QString nameAndScoreHtml;
+
+    for(auto &snkName : d_snakes.keys()){
+        Snake* &snk = d_snakes[snkName];
+
+        nameAndScoreHtml = QStringLiteral("<table>"
+                               "<tr><td>Name: </td><td>%1</td></tr>"
+                                "<tr><td>Score: </td><td>%2</td></tr>"
+                               "</table>").arg(snkName).arg(snk->score());
+    }
+    nameAndScoreHtml.append(QStringLiteral("<table>"
+                                          "<tr><td>Name: </td><td>%1</td></tr>"
+                                           "<tr><td>Score: </td><td>%2</td></tr>"
+                                          "</table>").arg(d_user).arg(d_snake->score()));
+
+    d_nameAndScore->setFont(nameAndScoreFont);
+    d_nameAndScore->setDefaultTextColor(Qt::white);
+    d_scene->removeItem(d_nameAndScore);
+    d_nameAndScore->setHtml(nameAndScoreHtml);
+    d_scene->addItem(d_nameAndScore);
+}
+
+void MultiPlayerSnakeGameView::mpTimerStops()
+{
+    d_timer->stop();
+    QMessageBox::information(this, "Game", "Timer Finished");
 }
 
 
@@ -134,9 +184,30 @@ void MultiPlayerSnakeGameView::keyPressEvent(QKeyEvent *event)
 
 void MultiPlayerSnakeGameView::generateManyFoods(int n)
 {
-
+    for(int i =0; i<n; i++){
+        generateFood();
+    }
 }
 
+//void MultiPlayerSnakeGameView::checkCollidingwSnakeAndFood()
+//{
+//    for(QGraphicsItem* item: d_scene->collidingItems(d_snake->childItems()[0])){
+//        if(qgraphicsitem_cast<Food*>(item)){;
+//            Food* fd = qgraphicsitem_cast<Food*>(item);
+//            fd->implodeOnEating();
+//            foodEaten();
+//        }
+//    }
+//}
 
+//void MultiPlayerSnakeGameView::foodEaten()
+//{
+//    d_snake->increaseScore();
+//    emit scoreDisplay(d_snake->score());
+//    emit mpFoodEaten(d_user, d_snake->score());
+
+//    displayNameAndScore();
+//    d_snake->increaseSnakeLength();
+//}
 
 

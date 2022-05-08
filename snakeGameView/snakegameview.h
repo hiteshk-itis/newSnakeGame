@@ -43,11 +43,11 @@ signals:
     void scoreDisplay(qreal score);
     void mpFoodEaten(const QString d_user, const int score);
     void callPlayerName();
-
+    void goToHome();
 private:
     qreal d_snakeSpeed;
     qreal d_score;
-    void displayNameAndScore();
+
 
 //    QPropertyAnimation* move_anim;
 
@@ -68,8 +68,8 @@ protected:
     static QString d_user;
     void moveSnake();
     void gameOver();
-
-    QVector<int> d_scores;
+    void displayNameAndScore(bool multiPlayer = false);
+    int bestScore;
 
 
     QGraphicsLineItem* topLine;

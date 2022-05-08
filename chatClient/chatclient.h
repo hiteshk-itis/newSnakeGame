@@ -29,6 +29,7 @@ signals:
     void generatePlayers(QHash<QString, QPointF>);
     void directionChanged(QString, int);
     void otherUserFoodEaten(QString playerName);
+    void goToHome();
 public slots:
     void sendDirection(Snake::Direction);
     void sendInitialPos(QPointF);
@@ -60,6 +61,8 @@ private:
 
     qreal players;
     QHash<QString, QPointF> d_snakesAndInitialPos;
+    bool d_roomEnrolled;
+
     void connectToServer();
     void disconnectFromServer();
     void roomInfoWindow();

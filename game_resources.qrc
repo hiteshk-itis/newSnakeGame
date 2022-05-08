@@ -2,5 +2,8 @@
     <qresource prefix="/img">
         <file>res/undraw_Gaming_re_cma2.png</file>
         <file>res/undraw_game_day_ucx9.svg</file>
+        <file>res/drawio.svg</file>
+        <file>res/pngkit_snake-cartoon-png_1033742.png</file>
+        <file>res/user-1.svg</file>
     </qresource>
 </RCC>

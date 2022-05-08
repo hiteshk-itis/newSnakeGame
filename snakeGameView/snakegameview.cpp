@@ -5,6 +5,7 @@
 #include <QGraphicsItem>
 
 #include <QDebug>
+
 #include <QMessageBox>
 #include <QStringLiteral>
 #include <QTimer>
@@ -19,6 +20,7 @@ SnakeGameView::SnakeGameView(QWidget* parent)
     ,d_food(new Food(d_fieldWidth,d_fieldHeight))
     ,d_timer(new QTimer)
     ,d_nameAndScore(new QGraphicsTextItem())
+    , bestScore(0)
 
 
 {
@@ -143,16 +145,17 @@ void SnakeGameView::foodEaten()
     emit scoreDisplay(d_snake->score());
     emit mpFoodEaten(d_user, d_snake->score());
 
-    displayNameAndScore();
+    displayNameAndScore(false);
     d_snake->increaseSnakeLength();
-    generateFood();
 
+    generateFood();
 }
 
 void SnakeGameView::generateFood()
 {
-    d_food = new Food(d_fieldWidth, d_fieldHeight);
+    d_food = new Food(d_fieldWidth-5, d_fieldHeight-5);
     d_scene->addItem(d_food);
+//    emit sendFoodPos(d_food->pos());
 }
 
 void SnakeGameView::getPlayerName(const QString name)
@@ -161,8 +164,6 @@ void SnakeGameView::getPlayerName(const QString name)
     d_snake->setObjectName(d_user);
 
     displayNameAndScore();
-
-
 }
 
 
@@ -172,24 +173,29 @@ Snake *SnakeGameView::snake()
     return d_snake;
 }
 
-void SnakeGameView::displayNameAndScore()
+void SnakeGameView::displayNameAndScore(bool multiPlayer)
 {
-    QFont nameAndScoreFont;
-    nameAndScoreFont.setFamily("Helvetica");
-    nameAndScoreFont.setCapitalization(QFont::Capitalize);
-    nameAndScoreFont.setItalic(true);
-    nameAndScoreFont.setPointSize(12);
+    if(!multiPlayer){
+        QFont nameAndScoreFont;
+        nameAndScoreFont.setFamily("Helvetica");
+        nameAndScoreFont.setCapitalization(QFont::Capitalize);
+        nameAndScoreFont.setItalic(true);
+        nameAndScoreFont.setPointSize(15);
+        nameAndScoreFont.setBold(true);
 
 
-    QString nameAndScoreHtml = QStringLiteral("<table>"
-                               "<tr><td>Name: </td><td>%1</td></tr>"
-                                "<tr><td>Score: </td><td>%2</td></tr>"
-                               "</table>").arg(d_user).arg(d_snake->score());
-    d_nameAndScore->setFont(nameAndScoreFont);
-    d_nameAndScore->setDefaultTextColor(Qt::white);
-    d_scene->removeItem(d_nameAndScore);
-    d_nameAndScore->setHtml(nameAndScoreHtml);
-    d_scene->addItem(d_nameAndScore);
+        QString nameAndScoreHtml = QStringLiteral("<table>"
+                                   "<tr><td>Name: </td><td>%1</td></tr>"
+                                    "<tr><td>Score: </td><td>%2</td></tr>"
+                                   "</table>").arg(d_user).arg(d_snake->score());
+
+
+        d_nameAndScore->setFont(nameAndScoreFont);
+        d_nameAndScore->setDefaultTextColor(Qt::white);
+        d_scene->removeItem(d_nameAndScore);
+        d_nameAndScore->setHtml(nameAndScoreHtml);
+        d_scene->addItem(d_nameAndScore);
+    }
 }
 
 /*bool SnakeGameView::isInsideBoundary()
@@ -276,14 +282,21 @@ void SnakeGameView::moveSnake()
 
 void SnakeGameView::gameOver()
 {
-    d_timer->stop();
-    QMessageBox::warning(this, "Game Over", tr("GAME OVER\n%1").arg(d_snake->score()));
+    if((d_timer->isActive()) && (d_snake->direction() != Snake::Direction::None)){
+
+        d_timer->stop();
+        QMessageBox::warning(this, "Game Over", tr("GAME OVER\n%1").arg(d_snake->score()));
+    }
 
 }
 
 void SnakeGameView::HomeBtnClicked()
-{QMessageBox msgBox;
+{
+    QMessageBox msgBox;
     msgBox.setText("Are you Sure?");
+    if((d_timer->isActive()) && (d_snake->direction() != Snake::Direction::None)){
+        msgBox.setDetailedText("Neither the game session will be paused nor the score will be saved.");
+    }
     msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No);
     msgBox.setDefaultButton(QMessageBox::Yes);
 
@@ -292,8 +305,10 @@ void SnakeGameView::HomeBtnClicked()
     switch (ret) {
     case QMessageBox::Yes:
         gameOver();
+        emit goToHome();
         break;
     case QMessageBox::No:
+        msgBox.close();
         break;
     default:
         break;

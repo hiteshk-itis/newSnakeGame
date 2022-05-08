@@ -19,7 +19,11 @@ class MultiPlayerPage : public QWidget
 public:
     explicit MultiPlayerPage(QWidget *parent = nullptr);
     ~MultiPlayerPage();
+signals:
+    void mpCreateOrJoinRoomClicked();
 
+private slots:
+    void on_pushButton_clicked();
 
 private:
     Ui::MultiPlayerPage *ui;

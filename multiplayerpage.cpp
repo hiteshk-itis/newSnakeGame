@@ -11,6 +11,8 @@ MultiPlayerPage::MultiPlayerPage(QWidget *parent) :
     d_snake = ui->graphicsView_multiPlayer->snake();
     d_chatClient =  ui->widget_mpChatClient;
 
+    connect(ui->home_btn, &QPushButton::clicked, ui->graphicsView_multiPlayer, &MultiPlayerSnakeGameView::homeBtnClicked);
+
 }
 
 MultiPlayerPage::~MultiPlayerPage()
@@ -18,3 +20,8 @@ MultiPlayerPage::~MultiPlayerPage()
     delete ui;
 }
 
+
+void MultiPlayerPage::on_pushButton_clicked()
+{
+    emit mpCreateOrJoinRoomClicked();
+}

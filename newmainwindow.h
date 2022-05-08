@@ -26,6 +26,7 @@ public:
 signals:
     void game_over(QString msg);
     void sendCentralWidget(QWidget*);
+    void goToHome();
 private slots:
     void on_btnRestart_clicked();
 
@@ -46,6 +47,8 @@ private slots:
     void on_timeout_linkHovered(const QString &link);
 
     void on_timeout_windowIconTextChanged(const QString &iconText);
+
+    void on_home_btn_clicked();
 
 protected:
    void keyPressEvent(QKeyEvent* e);
